@@ -1,11 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
- <head>
- <meta charset="utf-8">
- <title>Vue-js | Django | Crud App</title>
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="description" content="A simple crud app made with the vue js and django">
+<head>
+<meta charset="utf-8">
+<title>Vue-js | Django | Crud App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A simple crud app made with the vue js and django">
 <meta name="keywords" content="vuejs, django, crudapp, restapi">
  <!-- bootstap -->
  <link rel="stylesheet" 
@@ -14,14 +14,29 @@
     crossorigin="anonymous">
 
  <!-- boostrap css -->
+ <style>
+     input.edit {
+         display: none;
+     }
+
+     input.editing.edit {
+         display: block;
+     }
+
+     div.view {
+         display: block;
+     }
+     
+     div.editing.view {
+         display: none;
+     }
+
+ </style>
 </head>
 <body>
-    <div id="app">
-        <schedule-grid datos="hola que tal"></schedule-grid>
-
-        <blog-post title="My journey with Vue"></blog-post>
-        <blog-post title="Blogging with Vue"></blog-post>
-        <blog-post title="Why Vue is so fun"></blog-post>        
+    <div id="app">        
+        <blog-post v-bind:title="title"></blog-post>
+        <schedule-grid v-bind:datos="scheduleList"></schedule-grid>
     </div>
 
 <!-- bootrtap js files -->
