@@ -20,4 +20,5 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('articulos', TemplateView.as_view(template_name='index.html')),
+    path('grid', TemplateView.as_view(template_name='grid.html')),
 ]
