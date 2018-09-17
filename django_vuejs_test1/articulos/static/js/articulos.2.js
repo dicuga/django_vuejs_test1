@@ -187,22 +187,16 @@ Vue.component('schedule-empty-grid', {
                 })
                 this.routes_list[route] = route_info;
             });
+            //new_item = this.generateyEmptyModel('ruta1', '08:00', 1);
+            //this.routes_list['ruta0'].hours_list['08:00'].delivery_notes.push(new_item);
             console.log(this.routes_list);
         },
-        add: function(item) {
-            if (item.deliveryNote) {
-                this.state = 'add';
-                route_info = this.routes_list[item.route];
-                hour_info = route_info.hours_list[item.hour];
-                
-                index = hour_info.delivery_notes.length + 1;
-                new_item = this.generateyEmptyModel(route_info.route, hour_info.hour, index);
-                hour_info.delivery_notes.push(new_item);
-                this.edit(new_item);
+        add: function(route, hour_info) {
 
-            } else {
-                this.edit(item);
-            }
+            index = hour_info.delivery_notes.length + 1;            
+            new_item = this.generateyEmptyModel(route, hour_info.hour, index);            
+            hour_info.delivery_notes.push(new_item);
+            this.edit(new_item);
         },
         edit: function(item) {
             this.beforeEditingCache = item.deliveryNote
@@ -270,50 +264,39 @@ Vue.component('schedule-empty-grid', {
                     
                     <div :id="route_info.route" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                         <div class="card-body">
-                            <div class="row" v-for="hour_info in route_info.hours_list" :key="hour_info.hour">
+                            <div class="row" v-for="hour_info in route_info.hours_list">
+                                <div class="col">
+                                    <span class="firstHour">{{ hour_info.hour }}</span>
+                                    <button type="button" class="btn btn-default"
+                                        @click="add(route_info.route, hour_info)">+
+                                    </button>
+                                </div>
+
                                 <div class="col">
 
-                                    <div class="row" v-for="delivery_note in hour_info.delivery_notes">
+                                    <div class="row" v-for="delivery_note in hour_info.delivery_notes">                                    
                                         <div class="col">
-                                            <span :class="{
-                                                'firstHour': (delivery_note.id == 1),
-                                                'nextHour': (delivery_note.id > 1)
-                                            }
-                                            ">{{ delivery_note.route }}</span>
-
-                                            <span :class="{
-                                                'firstHour': (delivery_note.id == 1),
-                                                'nextHour': (delivery_note.id > 1)
-                                            }
-                                            ">{{ delivery_note.hour }}</span>
-                                            <button type="button" class="btn btn-default"
-                                                @click="add(delivery_note)">+
-                                            </button>
-
-                                        </div>
-                                        
-                                        <div class="col">
-                                        <div
-                                            class="view"
-                                            :class="{ editing: delivery_note == editedTodo }"
-                                            @dblclick="edit(delivery_note)">
-                                            {{ delivery_note.deliveryNote }}
-                                        </div>
-                                        <input
-                                            class="edit"
-                                            :class="{ editing: delivery_note == editedTodo }"
-                                            type="text" 
-                                            v-model="delivery_note.deliveryNote"
-                                            v-todo-focus="delivery_note == editedTodo"
-                                            @blur="doneEdit(delivery_note)"
-                                            @keyup.enter="doneEdit(delivery_note)"
-                                            @keyup.esc="cancelEdit(delivery_note)">
+                                            <div
+                                                class="view"
+                                                :class="{ editing: delivery_note == editedTodo }"
+                                                @dblclick="edit(delivery_note)">
+                                                {{ delivery_note.deliveryNote }}
+                                            </div>
+                                            <input
+                                                class="edit"
+                                                :class="{ editing: delivery_note == editedTodo }"
+                                                type="text" 
+                                                v-model="delivery_note.deliveryNote"
+                                                v-todo-focus="delivery_note == editedTodo"
+                                                @blur="doneEdit(delivery_note)"
+                                                @keyup.enter="doneEdit(delivery_note)"
+                                                @keyup.esc="cancelEdit(delivery_note)">
+                                            </input>
                                         </div>
                                         
                                         <div class="col">
                                             <input type="checkbox" v-model="delivery_note.deliveried">
                                         </div>
-                    
                                     </div>
                                 </div>
                             </div>

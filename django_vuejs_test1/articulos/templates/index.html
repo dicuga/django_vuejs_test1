@@ -15,6 +15,17 @@
 
  <!-- boostrap css -->
  <style>
+     .firstHour {
+         font-weight: bold;
+         color: black;
+     }
+
+     .nextHour {
+        font-weight: bold;
+        color:lightgray;
+
+     }
+
      input.edit {
          display: none;
      }
@@ -38,7 +49,7 @@
         <div id="app">
             <blog-post v-bind:title="title"></blog-post>
             <schedule-empty-grid
-                :routes="rutas2"
+                :routes="rutas"
                 :initial_hour="initial_hour"
                 :final_hour="final_hour"
                 :minutes_interval="minutes_interval">
