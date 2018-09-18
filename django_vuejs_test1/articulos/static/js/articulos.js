@@ -235,11 +235,34 @@ Vue.component('schedule-empty-grid', {
             this.editedTodo = null
             /* todo */
         },
-
-
+        seedGrid: function() {
+            let scheduleList = [
+                {'id': '10', 'ruta': 'ruta1', 'hora': '08:00', 'albaran': 'alb1', 'entregado': true, 'comentarios': 'com1'},
+                {'id': '20', 'ruta': 'ruta1', 'hora': '08:00', 'albaran': 'alb2', 'entregado': false, 'comentarios': 'com2'},
+                {'id': '30', 'ruta': 'ruta1', 'hora': '08:15', 'albaran': 'alb3', 'entregado': false, 'comentarios': 'com3'},
+                {'id': '50', 'ruta': 'ruta2', 'hora': '08:45', 'albaran': 'alb4', 'entregado': false, 'comentarios': ''},
+            ]
+            
+            that = this;
+            scheduleList.forEach(function(item) {
+                route = that.routes_list[item.ruta]
+                route.route = item.ruta;
+                hour_info = route.hours_list[item.hora];
+                hour_info.hour = item.hora;
+                hour_info.delivery_notes.push({
+                    'id': item.id,
+                    'route': item.ruta,
+                    'hour': item.hora,
+                    'deliveryNote': item.albaran,
+                    'deliveried': item.entregado,
+                    'comments': item.comentarios
+                })
+            })    
+        },
     },
     created: function() {
         this.generateRoutesStructure();
+        this.seedGrid();
     },
     computed: {
     },
@@ -273,42 +296,39 @@ Vue.component('schedule-empty-grid', {
                             <div class="row" v-for="hour_info in route_info.hours_list" :key="hour_info.hour">
                                 <div class="col">
 
-                                    <div class="row" v-for="delivery_note in hour_info.delivery_notes">
+                                    <div class="row row-bordered" v-for="delivery_note in hour_info.delivery_notes">
                                         <div class="col">
-                                            <span :class="{
-                                                'firstHour': (delivery_note.id == 1),
-                                                'nextHour': (delivery_note.id > 1)
-                                            }
-                                            ">{{ delivery_note.route }}</span>
+                                            <span v-show="(delivery_note.id == 1)" class="firstHour">
+                                                {{ delivery_note.route }}
+                                            </span>
 
-                                            <span :class="{
-                                                'firstHour': (delivery_note.id == 1),
-                                                'nextHour': (delivery_note.id > 1)
-                                            }
-                                            ">{{ delivery_note.hour }}</span>
-                                            <button type="button" class="btn btn-default"
+                                            <span v-show="(delivery_note.id == 1)" class="firstHour">
+                                                {{ delivery_note.hour }}
+                                            </span>
+                                            
+                                            <button type="button" class="btn btn-default" v-show="(delivery_note.id == 1)"
                                                 @click="add(delivery_note)">+
                                             </button>
 
                                         </div>
                                         
                                         <div class="col">
-                                        <div
-                                            class="view"
-                                            :class="{ editing: delivery_note == editedTodo }"
-                                            @dblclick="edit(delivery_note)">
-                                            {{ delivery_note.deliveryNote }}
-                                        </div>
-                                        <input
-                                            class="edit"
-                                            :class="{ editing: delivery_note == editedTodo }"
-                                            type="text" 
-                                            v-model="delivery_note.deliveryNote"
-                                            v-todo-focus="delivery_note == editedTodo"
-                                            @blur="doneEdit(delivery_note)"
-                                            @keyup.enter="doneEdit(delivery_note)"
-                                            @keyup.esc="cancelEdit(delivery_note)">
-                                        </div>
+                                            <div
+                                                class="view"
+                                                :class="{ editing: delivery_note == editedTodo }"
+                                                @dblclick="edit(delivery_note)">
+                                                {{ delivery_note.deliveryNote }}
+                                            </div>
+                                            <input
+                                                class="edit"
+                                                :class="{ editing: delivery_note == editedTodo }"
+                                                type="text" 
+                                                v-model="delivery_note.deliveryNote"
+                                                v-todo-focus="delivery_note == editedTodo"
+                                                @blur="doneEdit(delivery_note)"
+                                                @keyup.enter="doneEdit(delivery_note)"
+                                                @keyup.esc="cancelEdit(delivery_note)">
+                                            </div>
                                         
                                         <div class="col">
                                             <input type="checkbox" v-model="delivery_note.deliveried">
@@ -338,13 +358,6 @@ new Vue({
         rutas: ['ruta1', 'ruta2'],
         initial_hour: 8,
         final_hour: 20,
-        minutes_interval: 15,
-        scheduleList: [
-            {'id': '1', 'ruta': 'Ruta1', 'hora': '8:00', 'albaran': 'alb1', 'entregado': true, 'comentarios': 'com1'},
-            {'id': '2', 'ruta': 'Ruta1', 'hora': '8:00', 'albaran': 'alb2', 'entregado': false, 'comentarios': 'com2'},
-            {'id': '3', 'ruta': 'Ruta1', 'hora': '8:15', 'albaran': 'alb3', 'entregado': false, 'comentarios': 'com3'},
-            {'id': '4', 'ruta': 'Ruta1', 'hora': '8:30', 'albaran': '', 'entregado': false, 'comentarios': ''},
-            {'id': '5', 'ruta': 'Ruta1', 'hora': '8:45', 'albaran': '', 'entregado': false, 'comentarios': ''},
-        ]
+        minutes_interval: 15
     }
 });

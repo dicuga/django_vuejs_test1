@@ -26,21 +26,31 @@
 
      }
 
-     input.edit {
-         display: none;
-     }
+    .row-bordered {        
+        border-bottom: 1px solid #ccc;
+        margin: 0 15px;
+    }
 
-     input.editing.edit {
-         display: block;
-     }
+    .row-bordered:last-child {        
+        border-bottom: 1px solid #000;
+        margin: 0 15px;
+    }
 
-     div.view {
-         display: block;
-     }
-     
-     div.editing.view {
+    input.edit {
          display: none;
-     }
+    }
+
+    input.editing.edit {
+         display: block;
+    }
+
+    div.view {
+         display: block;
+    }
+
+    div.editing.view {
+         display: none;
+    }
 
  </style>
 </head>
