@@ -212,7 +212,6 @@ Vue.component('schedule-empty-grid', {
             console.log('dentro de cancel')
             if (this.state==='add') {
                 
-                
                 itemIndex = item.id - 1  // OJO: si permito eliminar no será este el objeto
                 this.routes_list[item.route].hours_list[item.hour].delivery_notes.splice(itemIndex, 1);
             
@@ -249,6 +248,9 @@ Vue.component('schedule-empty-grid', {
                 route.route = item.ruta;
                 hour_info = route.hours_list[item.hora];
                 hour_info.hour = item.hora;
+                if (hour_info.delivery_notes.length===1 && hour_info.delivery_notes[0].id===0) {
+                    hour_info.delivery_notes = [];
+                }
                 hour_info.delivery_notes.push({
                     'id': item.id,
                     'route': item.ruta,
