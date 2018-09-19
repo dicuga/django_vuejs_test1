@@ -15,6 +15,7 @@ class DeliveryNoteItem {
         this.deliveried = false;
         this.comments = '';
         this.salesOrder = '';
+        this.editing = false;
     }    
 }
 
@@ -24,44 +25,64 @@ Vue.component('deliverynote-item', {
     },
     data: function() {
         return {
-            //StateEnum: Object.freeze({'adding': 0, 'editing': 1}),
-            editing: false,
+            //StateEnum: Object.freeze({'adding': 0, 'editing': 1}),            
             beforeEdit: null
         }
     },
     methods: {
         edit: function() {
-            this.editing = true;
+            this.deliveryNote.editing = true;
             this.beforeEdit = this.deliveryNote.deliveryNote;
         },
         cancelEdit: function() {
-            this.editing = false;
+            if (this.beforeEdit === null) {
+                this.$emit('remove', deliveryNote.id);
+                return;
+            } 
+            this.deliveryNote.editing = false;
             this.deliveryNote.deliveryNote = this.beforeEdit;
             this.beforeEdit = null;
         },
         doneEdit: function() {
-            this.editing = false;
+            if (this.deliveryNote.deliveryNote==='' && this.beforeEdit === null) {
+                this.$emit('remove', deliveryNote.id);
+                return;
+            }
+
+            this.deliveryNote.editing = false;
             this.beforeEdit = null;
         }
     },
+    directives: {
+        'focus': {
+            update: function(el) {
+                el.focus();    
+            },
+            inserted: function (el) {
+                el.focus();
+            }
+        }
+    },   
     template:
         `
         <div class="row">
             <div class="col">
-                <div class="view" :class="{ editing: editing }">
+                <div class="view" :class="{ editing: deliveryNote.editing }">
                     {{ deliveryNote.deliveryNote}}
                 </div>
                 <input
+                    ref="albaran"
                     class="edit"
-                    :class="{ editing: editing }"
+                    :class="{ editing: deliveryNote.editing }"
                     type="text" 
                     v-model="deliveryNote.deliveryNote"
+                    v-focus="deliveryNote.editing"
                     @blur="doneEdit()"
                     @keyup.enter="doneEdit()"
                     @keyup.esc="cancelEdit()">
             </div>
             <div class="col">
-                <input type="checkbox" v-bind:disabled="! editing" v-model="deliveryNote.deliveried">
+                <input type="checkbox" v-bind:disabled="! deliveryNote.editing" v-model="deliveryNote.deliveried">
             </div>
             <div class="col">
                 <button type="button" @click="edit()">Edit</button>
@@ -95,7 +116,7 @@ Vue.component('hour-item', {
         add: function() {
             newId = this.getNewId();
             deliveryNote = new DeliveryNoteItem(newId, '');
-            deliveryNote.new = true;
+            deliveryNote.editing = true;
             this.delivery_note_list.push(deliveryNote);
             this.$emit('myEvent', newId);
         },
