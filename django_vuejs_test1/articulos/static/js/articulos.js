@@ -330,7 +330,7 @@ Vue.component('schedule-empty-grid', {
                                                 @blur="doneEdit(delivery_note)"
                                                 @keyup.enter="doneEdit(delivery_note)"
                                                 @keyup.esc="cancelEdit(delivery_note)">
-                                            </div>
+                                        </div>
                                         
                                         <div class="col">
                                             <input type="checkbox" v-model="delivery_note.deliveried">
