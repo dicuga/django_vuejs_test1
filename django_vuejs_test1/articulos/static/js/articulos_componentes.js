@@ -9,14 +9,16 @@ Vue.component('route-body', {
 */
 
 class DeliveryNoteItem {
-    constructor(id, deliveryNote) {
+    constructor(id, route, hour, deliveryNote) {
         this.id = id;
+        this.route = route
+        this.hour = hour
         this.deliveryNote = deliveryNote;
         this.deliveried = false;
         this.comments = '';
         this.salesOrder = '';
         this.editing = false;
-    }    
+    }
 }
 
 Vue.component('deliverynote-item', {
@@ -25,7 +27,7 @@ Vue.component('deliverynote-item', {
     },
     data: function() {
         return {
-            //StateEnum: Object.freeze({'adding': 0, 'editing': 1}),            
+            //StateEnum: Object.freeze({'adding': 0, 'editing': 1}),
             beforeEdit: null
         }
     },
@@ -51,6 +53,7 @@ Vue.component('deliverynote-item', {
 
             this.deliveryNote.editing = false;
             this.beforeEdit = null;
+
         }
     },
     directives: {
@@ -65,7 +68,11 @@ Vue.component('deliverynote-item', {
     },   
     template:
         `
-        <div class="row">
+        <div class="row row-bordered">
+        
+            <div class="col" v-show="false">{{ deliveryNote.route }}</div>
+            <div class="col" v-show="false">{{ deliveryNote.hour }}</div>
+
             <div class="col">
                 <div class="view" :class="{ editing: deliveryNote.editing }">
                     {{ deliveryNote.deliveryNote}}
@@ -81,9 +88,13 @@ Vue.component('deliverynote-item', {
                     @keyup.enter="doneEdit()"
                     @keyup.esc="cancelEdit()">
             </div>
+
+            <div class="col">{{ deliveryNote.salesOrder }}</div>
             <div class="col">
                 <input type="checkbox" v-bind:disabled="! deliveryNote.editing" v-model="deliveryNote.deliveried">
             </div>
+
+            <div class="col">{{ deliveryNote.comments }}</div>
             <div class="col">
                 <button type="button" @click="edit()">Edit</button>
                 <button type="button" @click="$emit('remove', deliveryNote.id)">Delete</button>
@@ -115,7 +126,7 @@ Vue.component('hour-item', {
     methods: {
         add: function() {
             newId = this.getNewId();
-            deliveryNote = new DeliveryNoteItem(newId, '');
+            deliveryNote = new DeliveryNoteItem(newId, this.route, this. hour, '');
             deliveryNote.editing = true;
             this.delivery_note_list.push(deliveryNote);
             this.$emit('myEvent', newId);
@@ -134,12 +145,12 @@ Vue.component('hour-item', {
     },
     template:
         `
-        <div class="row row-bordered">
-            <div class="col">
+        <div class="row row-bordered-button-black">
+            <div class="col-sm-2">
                 {{ route }} - {{ hour }}
                 <button type="button" @click="add()">+</button>
             </div>
-            <div class="col">
+            <div class="col-sm-10">
                 <deliverynote-item
                     v-for="item in delivery_note_list"
                     v-bind:deliveryNote="item"
@@ -177,32 +188,77 @@ Vue.component('route-item', {
         `
 })
 
-/*
-Vue.component('deliverynotes-schedule', {
-    components: {
+Vue.component('route-list', {
+    props: {
+        route_list: Array
+    },
+    template:
+        `
+        <div>
+            <route-item v-for="route in route_list"></route-item>
+        </div>
+        `
+})
 
+// Componente completo
+Vue.component('schedule-deliverynote', {
+    props: {
+        initial_hour: String,
+        final_hour: String,
+        minutes_interval: Number
+    },
+    mounted: function() {
+
+    },
+    methods: {
+        prepareResponse: function(response) {
+            console.log(response);
+        },
+        getDeliveryNotes: function() {
+            this.loading = true;
+            this.$http.get('/api/deliverynote')
+                .then(response => {
+                    this.loading = false;
+                    this.prepareResponse(response);
+                })
+                .catch(err => {
+                    this.loading = false;
+                    console.log(err);
+                })
+        }
     }
 })
-*/
+
 
 var vm = new Vue({
     el: '#app',
     methods: {
-        kk: function() {
+
+        getDeliveryNotes: function() {
+            this.loading = true;
+            this.$http.get('/api/deliverynote')
+                .then(response => {
+                    console.log("primer then resultado:")
+                    console.log(response);
+                    this.loading = false;
+                })
+                .then(msg => {
+                    console.log("segundo then resulado:");
+                    console.log(msg);
+                })
+                .catch(err => {
+                    this.loading = false;
+                    console.log(err);
+                })
         }
     },
+    mounted: function() {
+        this.getDeliveryNotes();
+    },
     computed: {
-        delivery_note_list: function() {
-            //this.methods.kk //[new DeliveryNoteItem(1, 'Alb1'), new DeliveryNoteItem(2, 'Alb2')]
-            var item1 = new DeliveryNoteItem(1, 'Alb1');
-            var item2 = new DeliveryNoteItem(2, 'Alb2');
-            var l = [item1, item2];
-
-            return l;
-        },
         route_item: function() {
             var hd = {};
-            var item1 = new DeliveryNoteItem(1, 'Alb1');
+            var item1 = new DeliveryNoteItem(1, '','', 'Alb1');
             var item2 = new DeliveryNoteItem(2, 'Alb2');
             var item3 = new DeliveryNoteItem(3, 'Alb3');
             var item4 = new DeliveryNoteItem(4, 'Alb4');
@@ -219,9 +275,5 @@ var vm = new Vue({
         }
     },
     data: {
-        item1: new DeliveryNoteItem(1, 'Alb1'),
-        item2: new DeliveryNoteItem(2, 'Alb2'),
-        route: 'Ruta1',
-        hour: '08:30'
     }
 });
